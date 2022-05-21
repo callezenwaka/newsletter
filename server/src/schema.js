@@ -7,6 +7,7 @@ const typeDefs = gql`
     filename: String!
     mimetype: String!
     encoding: String!
+    buffer: String!
   }
 
   type Query {
