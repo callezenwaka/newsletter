@@ -7,20 +7,16 @@
           <h2 class="form--title">Change File</h2>
         </div>
         <div class="form--item">
-          <label class="form--label" for="title">Title: </label>
-          <input class="form--input" type="text" name="title" id="title" v-model="title" @blur="handleBlur($event)" placeholder="Enter file title" required />
+          <label class="form--label" for="displayName">Full Name: </label>
+          <input class="form--input" type="text" name="displayName" id="displayName" v-model="account.displayName" @blur="handleBlur($event)" placeholder="Enter full name" required />
         </div>
         <div class="form--item">
-          <label class="form--label" for="title">Title: </label>
-          <input class="form--input" type="text" name="title" id="title" v-model="title" @blur="handleBlur($event)" placeholder="Enter file title" required />
+          <label class="form--label" for="email">Email: </label>
+          <input class="form--input" type="text" name="email" id="email" v-model="account.email" @blur="handleBlur($event)" placeholder="Enter email" required />
         </div>
         <div class="form--item">
-          <label class="form--label" for="title">Title: </label>
-          <input class="form--input" type="text" name="title" id="title" v-model="title" @blur="handleBlur($event)" placeholder="Enter file title" required />
-        </div>
-        <div class="form--item">
-          <label class="form--label" for="title">Title: </label>
-          <input class="form--input" type="text" name="title" id="title" v-model="title" @blur="handleBlur($event)" placeholder="Enter file title" required />
+          <label class="form--label" for="phoneNumber">Phone Number: </label>
+          <input class="form--input" type="text" name="phoneNumber" id="phoneNumber" v-model="account.phoneNumber" @blur="handleBlur($event)" placeholder="Enter phone number" required />
         </div>
         <div class="form--item">
           <label class="form--label" for="file">Select File: </label>
@@ -36,37 +32,37 @@
 
 <script lang="ts">
 // @ is an alias to /src
-// import Header from "@/components/partials/Header.vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent, reactive } from "vue";
 import { useMutation } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
+import { Buffer } from 'buffer';
+import { create } from "ipfs-http-client";
 export default defineComponent({
   name: "FileView",
   components: {
     // Header
   },
   setup() {
-    const title = ref('')
-    let fileURL = ref('')
+    const client = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
+    // const result = await client.add(buffer);
+    const account = reactive({
+      displayName: '',
+      email: '',
+      phoneNumber: '',
+      photoURL: '',
+      role: 'user',
+      isActive: true
+    });
+    // let fileURL = ref('')
     // const route = useRoute();
-
-    // const AVATAR= gql`
-    //   mutation Avatar($file: FileRequest!) {
-    //     Avatar(file: $file,) {
-    //       success,
-    //       message,
-    //       errorStatus,
-    //       error
-    //     }
-    //   }
-    // `;
 
     const { mutate: handleAvatar, onDone } = useMutation(gql`
       mutation singleUpload($file: Upload!) {
         singleUpload(file: $file,) {
-          filename, 
-          mimetype, 
-          encoding,
+          # filename,
+          # mimetype,
+          # encoding,
+          photoURL,
         }
       }
     `)
@@ -86,18 +82,22 @@ export default defineComponent({
     const handleImage = async (event: Event) => {
       const target = event.target as HTMLInputElement;
       const file = (target.files as FileList)[0];
-      // const data = e.target.files[0];
+      // let data: Buffer;
       // const reader = new window.FileReader();
-      // reader.readAsArrayBuffer(data);
-      // reader.onloadend = () => {
-      //   console.log("Buffer data: ", Buffer(reader.result));
+      // reader.readAsArrayBuffer(file);
+      // reader.onloadend = async () => {
+      //   // data = Buffer.from(reader.result as string);
+      //   console.log("Buffer data: ", Buffer.from(reader.result as string));
+      //   const result = await client.add(Buffer.from(reader.result as string));
+      //   const imageURL = `https://ipfs.infura.io/ipfs/${result.path}`;
+      //   console.log(imageURL);
       // }
       // const data = {
       //   file: (target.files as FileList)[0]
       // }
-      let formData = new FormData();
-      formData.append("file", file);
-      console.log(formData);
+      // let formData = new FormData();
+      // formData.append("file", file);
+      // console.log(formData);
       try {
         console.log(file);
         handleAvatar({
@@ -121,7 +121,7 @@ export default defineComponent({
       // }
     };
 
-    return { fileURL, title, handleBlur, handleImage, handleFile };
+    return { account, handleBlur, handleImage, handleFile };
   },
 });
 </script>

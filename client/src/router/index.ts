@@ -20,6 +20,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'File',
     component: () => import(/* webpackChunkName: "file" */ '../views/FileView.vue')
   },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import(/* webpackChunkName: "file" */ '../views/RegisterView.vue')
+  },
 ]
 
 const router = createRouter({
