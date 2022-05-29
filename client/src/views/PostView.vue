@@ -41,7 +41,7 @@ import { defineComponent, ref } from "vue";
 import { useMutation } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 export default defineComponent({
-  name: "FileView",
+  name: "PostView",
   components: {
     // Header
   },

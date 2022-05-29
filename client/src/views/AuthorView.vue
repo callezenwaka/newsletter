@@ -2,28 +2,32 @@
   <div class="file">
     <!-- <Header></Header> -->
     <div class="">
-      <form class="form--container" @submit.prevent="handleFile">
+      <form class="form--container" @submit.prevent="handleSubmit">
         <div class="form--header">
           <h2 class="form--title">Change File</h2>
         </div>
         <div class="form--item">
           <label class="form--label" for="displayName">Full Name: </label>
-          <input class="form--input" type="text" name="displayName" id="displayName" v-model="account.displayName" @blur="handleBlur($event)" placeholder="Enter full name" required />
+          <input class="form--input" type="text" name="displayName" id="displayName" v-model="author.displayName" @blur="handleBlur($event)" placeholder="Enter full name" required />
         </div>
         <div class="form--item">
           <label class="form--label" for="email">Email: </label>
-          <input class="form--input" type="text" name="email" id="email" v-model="account.email" @blur="handleBlur($event)" placeholder="Enter email" required />
+          <input class="form--input" type="text" name="email" id="email" v-model="author.email" @blur="handleBlur($event)" placeholder="Enter email" required />
         </div>
         <div class="form--item">
           <label class="form--label" for="phoneNumber">Phone Number: </label>
-          <input class="form--input" type="text" name="phoneNumber" id="phoneNumber" v-model="account.phoneNumber" @blur="handleBlur($event)" placeholder="Enter phone number" required />
+          <input class="form--input" type="text" name="phoneNumber" id="phoneNumber" v-model="author.phoneNumber" @blur="handleBlur($event)" placeholder="Enter phone number" required />
         </div>
         <div class="form--item">
           <label class="form--label" for="file">Select File: </label>
-          <input class="form--file" type="file" name="file" id="file" @change="handleImage" @blur="handleBlur($event)" required />
+          <input class="form--file" type="file" name="file" id="file" @change="handleImage" ref="inputFile" required />
+        </div>
+        <div v-if="author.photoURL" class="form--item">
+          <img :alt="filename" :src="author.photoURL">
         </div>
         <div class="form--item">
-          <button class="form--button" type="submit">Submit</button>
+          <!-- <button class="form--button" type="submit">Submit</button> -->
+          <button class="form--button" :class="{isValid: isValid}" type="submit">Submit</button>
         </div>
       </form>
     </div>
@@ -32,20 +36,20 @@
 
 <script lang="ts">
 // @ is an alias to /src
-import { defineComponent, reactive } from "vue";
+import { computed, defineComponent, reactive, ref } from "vue";
 import { useMutation } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
-import { Buffer } from 'buffer';
-import { create } from "ipfs-http-client";
+// import { Buffer } from 'buffer';
+// import { create } from "ipfs-http-client";
 export default defineComponent({
-  name: "FileView",
+  name: "AuthorView",
   components: {
     // Header
   },
   setup() {
-    const client = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
+    // const client = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
     // const result = await client.add(buffer);
-    const account = reactive({
+    const author = reactive({
       displayName: '',
       email: '',
       phoneNumber: '',
@@ -53,24 +57,24 @@ export default defineComponent({
       role: 'user',
       isActive: true
     });
-    // let fileURL = ref('')
+    // type Filename = File | null;
+    // type Filename = {
+    //   file: File;
+    // };
+
+    // let filename: Filename = null;
+    let filename = ref('');
+    const inputFile = ref(null)
+    
     // const route = useRoute();
-
-    const { mutate: handleAvatar, onDone } = useMutation(gql`
-      mutation singleUpload($file: Upload!) {
-        singleUpload(file: $file,) {
-          # filename,
-          # mimetype,
-          # encoding,
-          photoURL,
-        }
-      }
-    `)
-
-    onDone(result => {
-      console.log(result.data)
-      // fileURL = result.data.fileURL;
-    })
+    const isValid = computed(() => {
+      return (
+        author.displayName !== "" && 
+        author.phoneNumber !== "" && 
+        author.email !== "" && 
+        author.photoURL !== ""  
+      );
+    });
 
     const handleBlur = (event: Event) => {
       const target = event.target as HTMLInputElement;
@@ -78,6 +82,58 @@ export default defineComponent({
         ? "rgba(229,231,235, 1)"
         : "rgba(255, 0, 0, 1)";
     };
+
+    const { mutate: handleFile, onDone: doneFile } = useMutation(gql`
+      mutation addFile($file: Upload!) {
+        addFile(file: $file,) {
+          filename,
+          # mimetype,
+          # encoding,
+          photoURL,
+        }
+      }
+    `)
+
+    doneFile(result => {
+      console.log(result.data.addFile.photoURL);
+      author.photoURL = result.data.addFile.photoURL;
+      filename = result.data.addFile.filename;
+    })
+
+    const { mutate: handleAccount, onDone: doneAccount } = useMutation(gql`
+      mutation addAuthor ($displayName: String!, $email: String!, $phoneNumber: String!, $photoURL: String!, $role: String!, $isActive: Boolean!) {
+        addAuthor (displayName: $displayName, email: $email, phoneNumber: $phoneNumber, photoURL: $photoURL, role: $role, isActive: $isActive) {
+          id
+          displayName
+          email
+          phoneNumber
+          photoURL
+          role
+          isActive
+        }
+      }
+    `)
+    doneAccount(result => {
+      console.log(result.data.addAuthor);
+      author.displayName = '';
+      author.email = '';
+      author.phoneNumber = '';
+      author.photoURL = '';
+      filename.value = '';
+      // .reset();
+      // filename.value = '';
+      // if (filename['file'] == null) {
+      //   console.log('employee is nullish');
+      // } else {
+      //   // ✅ Works fine now (Use bracket notation)
+      //   console.log(filename['file']);
+      // }
+      // // filename['file'] = 
+      // if(filename['file'] !== null) {
+      //   filename.value.reset();
+      // }
+        
+    })
 
     const handleImage = async (event: Event) => {
       const target = event.target as HTMLInputElement;
@@ -100,28 +156,31 @@ export default defineComponent({
       // console.log(formData);
       try {
         console.log(file);
-        handleAvatar({
+        handleFile({
           file: file,
           // variables: data,
         });
-        // const data = await addAccountImage(formData);
+        // const data = await addAuthorImage(formData);
         // user.photoURL = typeof data === "string"? data : '';
       } catch (error) {
         console.log(error);
       }
     }
 
-    const handleFile = async () => {
+    const handleSubmit = async () => {
       // if (!handleValidation()) return;
-      // try {
-      //   await store.dispatch(ActionTypes.File, {...user});
-      //   router.push({ name: "Dashboard" });
-      // } catch (error) {
-      //   console.log(error);
-      // }
+      try {
+        handleAccount({
+          ...author
+        });
+        // await store.dispatch(ActionTypes.File, {...user});
+        // router.push({ name: "Dashboard" });
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    return { account, handleBlur, handleImage, handleFile };
+    return { filename, author, isValid, inputFile, handleBlur, handleImage, handleSubmit };
   },
 });
 </script>
@@ -206,26 +265,10 @@ export default defineComponent({
 }
 .form--button.isValid {
   cursor: pointer;
-  background-color: #0d6efd;
+  background-color: #2c3e50;
 }
 .form--button.isValid:hover {
   opacity: 0.5;
-}
-.form--option {
-  margin: 15px;
-  color: rgb(33, 49, 60);
-  font-size: 15px;
-  display: inline;
-  text-align: start;
-  display: block;
-  text-align: center;
-}
-.form--link {
-  text-decoration: none;
-  color: #3a6df0;
-}
-.form--text {
-  color: #ffffff;
 }
 /* mini */
 @media only screen and (min-width: 481px) {
@@ -237,21 +280,5 @@ export default defineComponent({
 }
 /* max */
 @media only screen and (min-width: 981px) {
-  .app {
-    background-color: var(--theme-bg-color);
-    min-width: 1250px;
-    max-width: 1250px;
-    /* max-height: 860px; */
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    width: 100%;
-    /* border-radius: 14px; */
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    font-size: 15px;
-    font-weight: 500;
-  }
 }
 </style>
