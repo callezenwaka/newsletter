@@ -1,11 +1,12 @@
 <template>
-  <div class="file">
-    <!-- <Header></Header> -->
+  <div class="register">
+    <Header></Header>
     <div class="">
+      <h1>Register Account</h1>
       <form class="form--container" @submit.prevent="handleSubmit">
-        <div class="form--header">
+        <!-- <div class="form--header">
           <h2 class="form--title">Change File</h2>
-        </div>
+        </div> -->
         <div class="form--item">
           <label class="form--label" for="displayName">Full Name: </label>
           <input class="form--input" type="text" name="displayName" id="displayName" v-model="author.displayName" @blur="handleBlur($event)" placeholder="Enter full name" required />
@@ -36,6 +37,7 @@
 
 <script lang="ts">
 // @ is an alias to /src
+import Header from "@/components/Header.vue";
 import { computed, defineComponent, reactive, ref } from "vue";
 import { useMutation } from '@vue/apollo-composable';
 // import gql from 'graphql-tag';
@@ -44,9 +46,9 @@ import { ADD_FILE } from "../graphql/File";
 // import { Buffer } from 'buffer';
 // import { create } from "ipfs-http-client";
 export default defineComponent({
-  name: "AuthorView",
+  name: "RegisterView",
   components: {
-    // Header
+    Header
   },
   setup() {
     const { mutate: handleAccount, onDone: doneAuthor } = useMutation(ADD_AUTHOR);
@@ -144,7 +146,7 @@ export default defineComponent({
 
 <style scoped>
 /* file */
-.file {
+.register {
   /* padding: 1rem; */
   height: 100%;
   min-height: 100vh;
@@ -203,6 +205,7 @@ export default defineComponent({
 .form--button {
   position: relative;
   background-color: transparent;
+  color: #000000;
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -223,6 +226,7 @@ export default defineComponent({
 .form--button.isValid {
   cursor: pointer;
   background-color: #2c3e50;
+  color: #ffffff;
 }
 .form--button.isValid:hover {
   opacity: 0.5;

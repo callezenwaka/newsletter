@@ -1,13 +1,14 @@
-import { GraphQLString, GraphQLList, GraphQLID, GraphQLBoolean } from 'graphql';
-import { PostType } from "../types/index";
+import { GraphQLString, GraphQLList, GraphQLID, GraphQLBoolean, GraphQLInt } from 'graphql';
+import { PostType, DateType} from "../types/index";
 import { posts } from '../../database/post';
+import { v4 as uuid } from 'uuid';
 
 export const Posts = {
 	name: "Posts",
 	description: "This request gets all posts",
 	type: new GraphQLList(PostType),
 	resolve: async (parent: any, args: any, context: any) => {
-		// const Posts = posts;
+		// console.info(posts);
 		return posts;
 	}
 };
@@ -33,18 +34,18 @@ export const addPost = {
 	description: "This requests add a single post",
   type: PostType,
   args: {
-    title: {type: GraphQLString},
-    content: {type: GraphQLString},
-    photoURL: {type: GraphQLString},
-    date: {type: GraphQLString},
-    isPublished: {type: GraphQLBoolean},
-    authorId: {type: GraphQLID},
+    title: { type: GraphQLString },
+    content: { type: GraphQLString },
+    photoURL: { type: GraphQLString },
+    date: { type: DateType },
+    isPublished: { type: GraphQLBoolean },
+    authorId: { type: GraphQLID },
   },
   // resolve: async (parent: any, args: { title?: string; content?: string; photoURL?: string; date?: string; authorId?: number; isPublished?: boolean; }, context: any) => {
   resolve: async (parent: any, args: any, context: any) => {
     if (!args.title || !args.content || !args.photoURL || !args.date || typeof args.isPublished != 'boolean' || !args.authorId) return;
     const postId = posts.push({ 
-      id: posts.length + 1, 
+      id: uuid(), 
       title: args.title, 
       content: args.content, 
       photoURL: args.photoURL, 
@@ -66,9 +67,9 @@ export const updatePost = {
     title: {type: GraphQLString},
     content: {type: GraphQLString},
     photoURL: {type: GraphQLString},
-    date: {type: GraphQLString},
+    date: {type: DateType},
     isPublished: {type: GraphQLBoolean},
-    authorId: {type: GraphQLID},
+    authorId: {type: GraphQLString},
   },
   resolve: async (parent: any, { id, title, content, photoURL, date, isPublished, authorId }: any, context: any) => {
   // resolve: async (parent: any, args: { id?: number; title?: string; content?: string; photoURL?: string; date?: string; authorId?: number; isPublished?: boolean; }, context: any) => {
@@ -103,23 +104,3 @@ export const deletePost = {
     return deleted_post[0];
   }
 }
-
-// const RootQuery = new GraphQLObjectType({
-// 	name: "RootQuery",
-// 	description: "This is the rootquery",
-// 	fields: {
-// 		Posts,
-// 		Post
-// 	}
-// });
-
-// const RootMutation = new GraphQLObjectType({
-//   name: "RootMutation",
-//   fields: {
-//     addPost,
-//     updatePost,
-//     deletePost
-//   }
-// });
-
-// export { RootQuery, RootMutation };

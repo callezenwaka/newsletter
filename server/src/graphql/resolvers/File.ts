@@ -23,11 +23,9 @@ const userHomeDir = os.homedir();
     const name = Date.now()+'_'+filename;
     const pathName = path.join(dirname, `/public/images/${name}`);
     await stream.pipe(fs.createWriteStream(pathName));
-    // console.info(pathName);
-    // console.info(await file.file);
 
     return { 
-      photoURL: `http://localhost:4000/images/${name}`,
+      photoURL: `http://localhost:${process.env.PORT}/images/${name}`,
       filename: filename,
     }
   }

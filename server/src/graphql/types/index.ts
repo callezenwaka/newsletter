@@ -1,5 +1,23 @@
-import { GraphQLString, GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLScalarType, GraphQLObjectType } from 'graphql';
+import { GraphQLString, GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLScalarType, GraphQLObjectType, Kind } from 'graphql';
 import { authors } from "../../database/Author";
+
+export const DateType = new GraphQLScalarType({
+  name: 'DateType',
+  description: "This is the date type definition.",
+  parseValue(value) {
+    return new Date(value);
+  },
+  parseLiteral(ast) {
+    if(ast.kind === Kind.INT)
+      return parseInt(ast.value, 10);
+    return null;
+  },
+  serialize(value) {
+    const date = new Date(value);
+
+    return date.toISOString();
+  }
+})
 
 export const AuthorType = new GraphQLObjectType({
   name: "Author",
@@ -23,7 +41,7 @@ export const PostType = new GraphQLObjectType({
     title: { type: GraphQLString },
     content: { type: GraphQLString },
     photoURL: { type: GraphQLString },
-    date: { type: GraphQLString },
+    date: { type: DateType },
     isPublished: { type: GraphQLBoolean },
     author: { 
       type: AuthorType,

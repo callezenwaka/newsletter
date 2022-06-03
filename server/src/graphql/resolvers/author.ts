@@ -1,6 +1,7 @@
 import { GraphQLString, GraphQLList, GraphQLBoolean, GraphQLID } from 'graphql';
 import { AuthorType } from "../types/index";
 import { authors } from "../../database/Author";
+import { v4 as uuid } from 'uuid';
 
 export const Authors = {
 	name: "Authors",
@@ -20,8 +21,8 @@ export const Author = {
 	resolve: async (parent: any, args: any, context: any) => {
     if(!args.id) return;
     const author = authors.find(author => author.id == args.id);
-    // console.log(author);
     if(!author) return;
+    console.log(author);
 
     return author;
 	}
@@ -42,7 +43,7 @@ export const addAuthor = {
   resolve: async (parent: any, args: any, context: any) => {
     if (!args.displayName || !args.email || !args.phoneNumber || !args.photoURL || !args.role || typeof args.isActive != 'boolean') return;
     const authorId = authors.push({
-      id: authors.length + 1,
+      id: uuid(),
       displayName: args.displayName,
       email: args.email,
       phoneNumber: args.phoneNumber,
@@ -51,7 +52,7 @@ export const addAuthor = {
       isActive: args.isActive,
     });
     // const new_author = authors.push(item);
-    // console.log(new_author, ...args);
+    // console.log(authorId, ...args);
     return {id: authorId, ...args};
   }
 }

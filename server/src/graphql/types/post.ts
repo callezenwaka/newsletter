@@ -8,7 +8,7 @@ export const PostType = new GraphQLObjectType({
     title: {type: GraphQLString},
     content: {type: GraphQLString},
     photoURL: {type: GraphQLString},
-    date: {type: GraphQLString},
+    date: {type: GraphQLInt},
     isPublished: {type: GraphQLBoolean},
     authorId: {type: GraphQLInt},
   })

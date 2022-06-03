@@ -14,9 +14,6 @@ declare global {
 // Assignement works fine now
 // https://marcinbiernat.pl/2020/03/nodejs-globals/
 global.dirname = path.join(__dirname);
-// console.log(dirname);
-
-// global.dirname = '';
 
 app.use(cors());
 app.use(express.json());

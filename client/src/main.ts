@@ -3,21 +3,23 @@ import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
 import store from './store'
-import { DefaultApolloClient } from '@vue/apollo-composable'
+import { DefaultApolloClient, provideApolloClient } from '@vue/apollo-composable'
 import { createUploadLink } from 'apollo-upload-client';
 import { ApolloClient, InMemoryCache } from '@apollo/client/core'
 
 // Create the apollo client
 const DefaultClient = new ApolloClient({
   link: createUploadLink({
-    uri: 'http://localhost:4000/graphql'
+    uri: 'http://localhost:4001/graphql'
   }),
   cache: new InMemoryCache(),
 })
 
 createApp({
   setup() {
-    provide(DefaultApolloClient, DefaultClient);
+    // https://vincenzoraco.dev/graphql-in-vue3-using-apollo-ckqeocnn60hwtd6s1bmf3ge9x
+    provideApolloClient(DefaultClient);
+    // provide(DefaultApolloClient, DefaultClient);
   },
   render: () => h(App),
 })

@@ -1,24 +1,46 @@
-import { gql } from "@apollo/client";
+// import { gql } from "@apollo/client/core";
+import gql from 'graphql-tag';
 
-export const AVATAR= gql`
-  mutation Avatar($file: FileRequest!) {
-    Avatar(file: $file,) {
-      success,
-      message,
-      errorStatus,
-      error
+export const POSTS = gql`
+  query Posts {
+    Posts {
+      id
+      title
+      content
+      date
+      photoURL
+      isPublished
+      author {
+        id
+        displayName
+        email
+        phoneNumber
+        photoURL
+        role
+        isActive
+      }
     }
   }
 `;
 
-// export const MULTIPLE_FILE_UPLOAD=gql`
-// mutation multipleFileUpload(
-//   $file: [Uploads!]!
-// ) {
-//   multipleFileUpload(
-//     file: $file,
-//   ) {
-//      success,message,errorStatus,error,token
-//   }
-// }
-// `;
+export const POST = gql`
+  query Post($id: ID!) {
+    Post(id: $id) {
+      id
+      title
+      content
+      date
+      photoURL
+      isPublished
+      author {
+        id
+        displayName
+        email
+        phoneNumber
+        photoURL
+        role
+        isActive
+      }
+    }
+  }
+`;
