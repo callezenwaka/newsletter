@@ -43,8 +43,7 @@ import { useMutation } from '@vue/apollo-composable';
 // import gql from 'graphql-tag';
 import { ADD_AUTHOR } from "../graphql/Author";
 import { ADD_FILE } from "../graphql/File";
-// import { Buffer } from 'buffer';
-// import { create } from "ipfs-http-client";
+import { handleBlur } from '@/services';
 export default defineComponent({
   name: "RegisterView",
   components: {
@@ -71,13 +70,6 @@ export default defineComponent({
         author.photoURL !== ""  
       );
     });
-
-    const handleBlur = (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      target.style.borderColor = target.value
-        ? "rgba(229,231,235, 1)"
-        : "rgba(255, 0, 0, 1)";
-    };
 
     doneFile(result => {
       author.photoURL = result.data.addFile.photoURL;

@@ -4,8 +4,17 @@ import HomeView from '../views/HomeView.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    name: 'Home',
+    component: HomeView,
+    meta: { requiresAuth: true },
+    beforeEnter: (to, from, next) => {
+      const isAuthor = JSON.parse(localStorage.getItem('isAuthor') as string) !== true;
+      console.info(isAuthor);
+      // console.info(JSON.parse(isAuthor) !== true);
+      if (to.name !== 'Login' && isAuthor) next({ name: 'Login' });
+      // if (JSON.parse(isAuthor) !== true) next({ name: 'Login' });
+      else next();
+    }
   },
   {
     path: '/register',
@@ -15,7 +24,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "register" */ '../views/LoginView.vue')
+    component: () => import(/* webpackChunkName: "register" */ '../views/LoginView.vue'),
+    // meta: { guest: true },
+    // beforeEnter: (to, from, next) => {
+    //   const isAuthor = JSON.parse(localStorage.getItem('isAuthor') as string) !== true;
+    //   console.info(isAuthor);
+    //   // console.info(JSON.parse(isAuthor) !== true);
+    //   if (to.name === 'Login' && isAuthor) next({ name: 'Home' });
+    //   // if (JSON.parse(isAuthor) !== true) next({ name: 'Login' });
+    //   // else next({ name: 'Login' });
+    //   else next();
+    // }
   },
   {
     path: '/author',

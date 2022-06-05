@@ -2,7 +2,8 @@
   <nav>
     <router-link to="/">Home</router-link> |
     <router-link to="/register">Register</router-link> |
-    <router-link to="/login">Login</router-link>
+    <router-link v-if="!isAuthor" to="/login">Login</router-link>
+    <router-link v-if="isAuthor" class="" to="/login" @click="handleLogout">Logout</router-link>
   </nav>
 </template>
 
@@ -11,9 +12,16 @@
 import { defineComponent } from "vue";
 export default defineComponent({
   name: "HeaderView",
-  // setup() {
-  //   console.info(Date.now());
-  // },
+  setup() {
+    // JSON.parse(isAuthor) !== true
+    const isAuthor = JSON.parse(localStorage.getItem('isAuthor') as string) !== true;
+
+    const handleLogout = async () => {
+      localStorage.removeItem('isAuthor');
+    }
+
+    return { isAuthor, handleLogout }
+  },
 });
 </script>
 

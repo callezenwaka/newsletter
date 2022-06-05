@@ -1,7 +1,6 @@
 <template>
   <div class="register">
     <Header></Header>
-    <div>{{ id }}</div>
     <div class="">
       <h1>Login Account</h1>
       <form class="form--container" @submit.prevent="handleSubmit">
@@ -20,13 +19,10 @@
 <script lang="ts">
 // @ is an alias to /src
 import Header from "@/components/Header.vue";
-import { computed, defineComponent, reactive, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { useStore } from 'vuex';
-// import { useQuery } from '@vue/apollo-composable';
-// import { Author } from "../types";
-// import { AUTHOR } from "../graphql/Author";
-// import gql from 'graphql-tag';
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
+import { handleBlur } from '@/services';
 export default defineComponent({
   name: "LoginView",
   components: {
@@ -34,79 +30,22 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    // const router = useRouter()
-    // const id = ref<string>('d99fb4b9-e2eb-4f40-8064-de0bc3e84521');
+    const router = useRouter();
     const id = ref('');
     const author = computed(() => store.getters.author);
     const isValid = computed(() => id.value !== '' );
-    // const isValid = true;
-    // let author = reactive({});
-    // let author = reactive({
-    //   id: '',
-    //   displayName: '',
-    //   email: '',
-    //   phoneNumber: '',
-    //   photoURL: '',
-    //   role: '',
-    //   isActive: false,
-    // });
-    
-    // const { result: resultAuthor } = useQuery(gql`
-    //   query Author($id: ID!) {
-    //     Author(id: $id) {
-    //       id
-    //       displayName
-    //       email
-    //       phoneNumber
-    //       photoURL
-    //       role
-    //       isActive
-    //     }
-    //   }
-    // `, () => ({ id: id.value }) );
-
-    // if(!resultAuthor.value) return;
-    // console.info(resultAuthor.value);
-    // const author = computed((): Author => resultAuthor.value?.Author);
-
-    const handleBlur = (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      target.style.borderColor = target.value
-        ? "rgba(229,231,235, 1)"
-        : "rgba(255, 0, 0, 1)";
-    };
 
     const handleSubmit = async () => {
-      console.info('handleSubmit');
-      store.dispatch('AUTHOR', id.value);
-      // try {
-      //   const { result: resultAuthor } = useQuery(gql`
-      //     query Author($id: ID!) {
-      //       Author(id: $id) {
-      //         id
-      //         displayName
-      //         email
-      //         phoneNumber
-      //         photoURL
-      //         role
-      //         isActive
-      //       }
-      //     }
-      //   `, () => ({ id: id.value }) );
-      //   if(!resultAuthor.value) return;
-      //   console.info(resultAuthor.value);
-      //   // author = computed((): Author => resultAuthor.value?.Author);
-      //   // author = computed((): Author => resultAuthor.value?.Author ?? {});
-      //   // author = resultAuthor.value?.Author ?? {};
-      //   // if(!resultAuthor.value) return;
-      //   // localStorage.setItem('author', JSON.stringify(author));
-      //   console.info(author);
-      //   // router.push({ path: '/' })
-      //   // router.push({ name: "HomeView" });
-      //   // route.push({ name: "HomeView" });
-      // } catch (error) {
-      //   console.log(error);
-      // }
+      // TODO: 
+      try {
+        const result = await store.dispatch('AUTHOR', id.value);
+        console.info(result);
+        if(typeof result !== 'object') return;
+        localStorage.setItem('isAuthor', "true");
+        router.push({ path: '/' })
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     return { id, isValid, author, handleBlur, handleSubmit };

@@ -26,13 +26,13 @@
 
 <script lang="ts">
 // @ is an alias to /src
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, onMounted } from "vue";
 import PostCard from "@/components/PostCard.vue";
 import Header from "@/components/Header.vue";
 import { useStore } from 'vuex';
 import { Post } from "../types";
-import { useQuery } from '@vue/apollo-composable';
-import { POSTS } from "../graphql/Post";
+// import { useQuery } from '@vue/apollo-composable';
+// import { POSTS } from "../graphql/Post";
 export default defineComponent({
   name: "HomeView",
   components: {
@@ -42,15 +42,18 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const posts = computed((): Post[] => store.getters.posts);
+    onMounted(() => { store.dispatch('POSTS'); })
+
+    const posts = computed((): Post[] => store.getters.posts || []);
+    // const author = localStorage.getItem('author');
+    // console.log("author: ", author);
+    // JSON.parse(value) === true
     // const { result: resultPosts, loading: isPostsLoading, error: errorPosts, refetch: refetchPosts } = useQuery(POSTS);
     // console.log(resultPosts.value);
 
     // const posts = computed((): Post[] => resultPosts.value?.Posts ?? []);
 
-    // onMounted(() => { refetchPosts(); })
-
-    return { posts, isPostsLoading, errorPosts, refetchPosts };
+    return { posts };
   },
 });
 </script>

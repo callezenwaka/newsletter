@@ -22,7 +22,7 @@ export const Author = {
     if(!args.id) return;
     const author = authors.find(author => author.id == args.id);
     if(!author) return;
-    console.log(author);
+    // console.log(author);
 
     return author;
 	}
