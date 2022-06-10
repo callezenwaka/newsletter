@@ -27,7 +27,6 @@
           <img :alt="filename" :src="author.photoURL">
         </div>
         <div class="form--item">
-          <!-- <button class="form--button" type="submit">Submit</button> -->
           <button class="form--button" :class="{isValid: isValid}" type="submit">Submit</button>
         </div>
       </form>

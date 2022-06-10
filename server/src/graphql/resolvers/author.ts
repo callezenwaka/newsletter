@@ -4,7 +4,7 @@ import { authors } from "../../database/Author";
 import { v4 as uuid } from 'uuid';
 
 export const Authors = {
-	name: "Authors",
+	name: "authors",
 	description: "This request gets all authors",
 	type: new GraphQLList(AuthorType),
 	resolve: async (parent: any, args: any) => {
@@ -14,7 +14,7 @@ export const Authors = {
 };
 
 export const Author = {
-	name: "Author",
+	name: "author",
 	description: "This request gets a single author",
 	type: AuthorType,
 	args: { id: { type: GraphQLID } },

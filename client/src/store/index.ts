@@ -1,8 +1,9 @@
 import { createStore } from 'vuex';
-// import axios from "axios";
+import axios from "axios";
 export const HOSTNAME = 'http://localhost:4001/graphql';
 // import { useQuery } from '@vue/apollo-composable';
 // import { AUTHOR } from "../graphql/Author";
+import { POSTS } from "../graphql/Post";
 import { Author, Post } from '@/types';
 import { client } from '@/services';
 // const client = {
@@ -48,7 +49,6 @@ export default createStore({
       });
 
       const result = await client(data);
-      // console.info(result.data);
 			context.commit('SET_POSTS', result.data.Posts);
 
       return result.data.Posts;
@@ -74,10 +74,56 @@ export default createStore({
       });
 
       const result = await client(data);
-      // console.info(result.data);
 			context.commit('SET_POST', result.data.Post);
 
       return result.data.Post;
+    },
+    async ADD_POST(context, payload) {
+      console.info(payload);
+      // return payload;
+      const { title, content, photoURL, date, isPublished, authorId } = payload;
+      // const data = JSON.stringify({
+      //   query: `{
+      //     mutation {
+      //       addPost (title: "${title}", content: "${content}", photoURL: "${photoURL}", date: "${date}", isPublished: "${isPublished}", authorId: "${authorId}") {
+      //         title
+      //         content
+      //         photoURL
+      //         date
+      //         isPublished
+      //         authorId
+      //       }
+      //     }
+      //   }`
+      // });
+
+      // const result = await client(data);
+			// context.commit('SET_POST', result.data.Post);
+
+      // return result.data.Post;
+      const {data} = await axios({
+        method: "POST",
+        url: `${HOSTNAME}`,
+        data: JSON.stringify({
+          query: `
+            mutation {
+              addPost (title: "${title}", content: "${content}", photoURL: "${photoURL}", date: "${date}", isPublished: "${isPublished}", authorId: "${authorId}") {
+                title 
+                content
+                id
+                date
+                isPublished
+              }
+            }
+          `
+        }),
+        headers: {
+          'content-type': 'application/json',
+          'Accept': 'application/json',
+        }
+      });
+      console.info(data);
+      return data;
     },
     async AUTHORS(context) {
       const data = JSON.stringify({
@@ -96,32 +142,11 @@ export default createStore({
       });
 
       const result = await client(data);
-      // console.info(result.data);
-			context.commit('SET_AUTHORS', result.data.Author);
+			context.commit('SET_AUTHORS', result.data.Authors);
 
       return result.data.Authors;
     },
     async AUTHOR(context, payload) {
-      // console.info(client);
-      // console.info({...client});
-      // const { data } = await axios({
-      //   ...client,
-        // input: JSON.stringify({
-        //   query: `{
-        //     Author(id: "${payload}") {
-        //       id
-        //       displayName    
-        //       photoURL
-        //       email
-        //       phoneNumber
-        //       photoURL
-        //       role
-        //       isActive
-        //     }
-        //   }`
-        // }),
-      // });
-
       const data = JSON.stringify({
         query: `{
           Author(id: "${payload}") {
@@ -138,7 +163,6 @@ export default createStore({
       });
 
       const result = await client(data);
-      // console.info(result.data);
 			context.commit('SET_AUTHOR', result.data.Author);
 
       return result.data.Author;

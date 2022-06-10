@@ -1,8 +1,8 @@
 <template>
   <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/register">Register</router-link> |
-    <router-link v-if="!isAuthor" to="/login">Login</router-link>
+    <router-link to="/">Home</router-link> 
+    <router-link v-if="!isAuthor" to="/register">Register</router-link> 
+    <router-link v-if="!isAuthor" to="/login">Login</router-link> 
     <router-link v-if="isAuthor" class="" to="/login" @click="handleLogout">Logout</router-link>
   </nav>
 </template>
@@ -14,10 +14,11 @@ export default defineComponent({
   name: "HeaderView",
   setup() {
     // JSON.parse(isAuthor) !== true
-    const isAuthor = JSON.parse(localStorage.getItem('isAuthor') as string) !== true;
+    const isAuthor = JSON.parse(localStorage.getItem('isAuthor') as string) === true;
 
     const handleLogout = async () => {
       localStorage.removeItem('isAuthor');
+      localStorage.removeItem('id');
     }
 
     return { isAuthor, handleLogout }
@@ -35,10 +36,16 @@ export default defineComponent({
 }
 
 nav {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
   padding: 30px;
 }
 
 nav a {
+  padding-left: 1rem;
+  padding-right: 1rem;
   font-weight: bold;
   color: #2c3e50;
 }

@@ -1,33 +1,32 @@
 <template>
-  <div class="file">
-    <!-- <Header></Header> -->
+  <div class="post">
+    <Header></Header>
     <div class="">
-      <form class="form--container" @submit.prevent="handleFile">
+      <form class="form--container" @submit.prevent="handleSubmit">
         <div class="form--header">
-          <h2 class="form--title">Change File</h2>
+          <h2 class="form--title">Submit Post</h2>
         </div>
         <div class="form--item">
           <label class="form--label" for="title">Title: </label>
-          <input class="form--input" type="text" name="title" id="title" v-model="title" @blur="handleBlur($event)" placeholder="Enter file title" required />
+          <input class="form--input" type="text" name="title" id="title" v-model="post.title" @blur="handleBlur($event)" placeholder="Enter post title" required />
         </div>
         <div class="form--item">
-          <label class="form--label" for="title">Title: </label>
-          <input class="form--input" type="text" name="title" id="title" v-model="title" @blur="handleBlur($event)" placeholder="Enter file title" required />
+          <label class="form--label" for="content">Content: </label>
+          <input class="form--input" type="text" name="content" id="content" v-model="post.content" @blur="handleBlur($event)" placeholder="Enter post content" required />
         </div>
         <div class="form--item">
-          <label class="form--label" for="title">Title: </label>
-          <input class="form--input" type="text" name="title" id="title" v-model="title" @blur="handleBlur($event)" placeholder="Enter file title" required />
-        </div>
-        <div class="form--item">
-          <label class="form--label" for="title">Title: </label>
-          <input class="form--input" type="text" name="title" id="title" v-model="title" @blur="handleBlur($event)" placeholder="Enter file title" required />
+          <label class="form--label" for="date">Date: </label>
+          <input class="form--input" type="date" name="date" id="date" v-model="post.date" @blur="handleBlur($event)" placeholder="Enter post date" required />
         </div>
         <div class="form--item">
           <label class="form--label" for="file">Select File: </label>
           <input class="form--file" type="file" name="file" id="file" @change="handleImage" @blur="handleBlur($event)" required />
         </div>
+        <div v-if="post.photoURL" class="form--item">
+          <img :alt="filename" :src="post.photoURL">
+        </div>
         <div class="form--item">
-          <button class="form--button" type="submit">Submit</button>
+          <button class="form--button" :class="{isValid: isValid}" type="submit">Submit</button>
         </div>
       </form>
     </div>
@@ -36,99 +35,79 @@
 
 <script lang="ts">
 // @ is an alias to /src
-// import Header from "@/components/partials/Header.vue";
-import { defineComponent, ref } from "vue";
+import Header from "@/components/Header.vue";
+import { computed, defineComponent, reactive, ref } from "vue";
+import { handleBlur } from '@/services';
 import { useMutation } from '@vue/apollo-composable';
-import gql from 'graphql-tag';
+import { useStore } from 'vuex';
+import { ADD_FILE } from "../graphql/File";
+// import gql from 'graphql-tag';
 export default defineComponent({
   name: "PostView",
   components: {
-    // Header
+    Header
   },
   setup() {
-    const title = ref('')
-    let fileURL = ref('')
+    const store = useStore();
     // const route = useRoute();
+    let filename = ref('');
+    const post = reactive({
+      title: '',
+      content: '',
+      photoURL: '',
+      date: '',
+      isPublished: true
+    });
+    const isValid = computed(() => {
+      return (
+        post.title !== "" && 
+        post.content !== "" &&
+        post.date !== "" && 
+        post.photoURL !== ""  
+      );
+    });
 
-    // const AVATAR= gql`
-    //   mutation Avatar($file: FileRequest!) {
-    //     Avatar(file: $file,) {
-    //       success,
-    //       message,
-    //       errorStatus,
-    //       error
-    //     }
-    //   }
-    // `;
+    const { mutate: handleFile, onDone: doneFile } = useMutation(ADD_FILE)  
 
-    const { mutate: handleAvatar, onDone } = useMutation(gql`
-      mutation singleUpload($file: Upload!) {
-        singleUpload(file: $file,) {
-          filename, 
-          mimetype, 
-          encoding,
-        }
-      }
-    `)
-
-    onDone(result => {
-      console.log(result.data)
-      // fileURL = result.data.fileURL;
-    })
-
-    const handleBlur = (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      target.style.borderColor = target.value
-        ? "rgba(229,231,235, 1)"
-        : "rgba(255, 0, 0, 1)";
-    };
+    doneFile(result => {
+      console.info(result.data.addFile.photoURL);
+      post.photoURL = result.data.addFile.photoURL;
+      filename.value = result.data.addFile.filename;
+    });
 
     const handleImage = async (event: Event) => {
       const target = event.target as HTMLInputElement;
       const file = (target.files as FileList)[0];
-      // const data = e.target.files[0];
-      // const reader = new window.FileReader();
-      // reader.readAsArrayBuffer(data);
-      // reader.onloadend = () => {
-      //   console.log("Buffer data: ", Buffer(reader.result));
-      // }
-      // const data = {
-      //   file: (target.files as FileList)[0]
-      // }
-      let formData = new FormData();
-      formData.append("file", file);
-      console.log(formData);
       try {
-        console.log(file);
-        handleAvatar({
+        // console.log(file);
+        handleFile({
           file: file,
-          // variables: data,
         });
-        // const data = await addAccountImage(formData);
-        // user.photoURL = typeof data === "string"? data : '';
       } catch (error) {
         console.log(error);
       }
     }
 
-    const handleFile = async () => {
+    const handleSubmit = async () => {
       // if (!handleValidation()) return;
-      // try {
-      //   await store.dispatch(ActionTypes.File, {...user});
-      //   router.push({ name: "Dashboard" });
-      // } catch (error) {
-      //   console.log(error);
-      // }
+      try {
+        const authorId = localStorage.getItem('id');
+        const result = await store.dispatch('ADD_POST', { authorId: authorId, ...post });
+        console.info(result);
+        // router.push({ name: "Dashboard" });
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    return { fileURL, title, handleBlur, handleImage, handleFile };
+    return { filename, isValid, post, handleBlur, handleImage, handleSubmit };
   },
 });
 </script>
 
 <style scoped>
 /* file */
-.file {
+.post {
   /* padding: 1rem; */
   height: 100%;
   min-height: 100vh;

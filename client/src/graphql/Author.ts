@@ -1,5 +1,5 @@
-// import { gql } from "@apollo/client/core";
-import gql from 'graphql-tag';
+import { gql } from "@apollo/client/core";
+// import gql from 'graphql-tag';
 export const ADD_AUTHOR = gql`
   mutation addAuthor ($displayName: String!, $email: String!, $phoneNumber: String!, $photoURL: String!, $role: String!, $isActive: Boolean!) {
     addAuthor (displayName: $displayName, email: $email, phoneNumber: $phoneNumber, photoURL: $photoURL, role: $role, isActive: $isActive) {

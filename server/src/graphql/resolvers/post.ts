@@ -4,7 +4,7 @@ import { posts } from '../../database/post';
 import { v4 as uuid } from 'uuid';
 
 export const Posts = {
-	name: "Posts",
+	name: "posts",
 	description: "This request gets all posts",
 	type: new GraphQLList(PostType),
 	resolve: async (parent: any, args: any, context: any) => {
@@ -14,7 +14,7 @@ export const Posts = {
 };
 
 export const Post = {
-	name: "Post",
+	name: "post",
 	description: "This request gets a single post",
 	type: PostType,
 	args: { id: { type: GraphQLID } },
@@ -43,7 +43,8 @@ export const addPost = {
   },
   // resolve: async (parent: any, args: { title?: string; content?: string; photoURL?: string; date?: string; authorId?: number; isPublished?: boolean; }, context: any) => {
   resolve: async (parent: any, args: any, context: any) => {
-    if (!args.title || !args.content || !args.photoURL || !args.date || typeof args.isPublished != 'boolean' || !args.authorId) return;
+    console.info(args);
+    if (!args.title || !args.content || !args.photoURL || !args.date || typeof Boolean(args.isPublished) != 'boolean' || !args.authorId) return;
     const postId = posts.push({ 
       id: uuid(), 
       title: args.title, 

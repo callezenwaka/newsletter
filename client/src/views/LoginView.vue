@@ -39,9 +39,10 @@ export default defineComponent({
       // TODO: 
       try {
         const result = await store.dispatch('AUTHOR', id.value);
-        console.info(result);
+        // console.info(result);
         if(typeof result !== 'object') return;
         localStorage.setItem('isAuthor', "true");
+        localStorage.setItem('id', id.value);
         router.push({ path: '/' })
       } catch (error) {
         console.log(error);

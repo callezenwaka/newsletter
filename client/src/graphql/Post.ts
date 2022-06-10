@@ -1,5 +1,7 @@
 // import { gql } from "@apollo/client/core";
 import gql from 'graphql-tag';
+import { useQuery } from '@vue/apollo-composable';
+
 
 export const POSTS = gql`
   query Posts {
