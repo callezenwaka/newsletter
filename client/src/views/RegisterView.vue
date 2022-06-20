@@ -119,7 +119,7 @@ export default defineComponent({
     const handleSubmit = async () => {
       // if (!handleValidation()) return;
       try {
-        console.log({...author});
+        // console.log({...author});
         handleAccount({
           ...author
         });
@@ -150,7 +150,7 @@ export default defineComponent({
   width: 100%;
   margin: 50px auto;
   margin: 0rem auto 0;
-  padding: 0 1rem;
+  padding: 0rem;
 }
 .form--title {
   text-align: center;
@@ -227,7 +227,7 @@ export default defineComponent({
   .form--container {
     width: 410px;
     margin: 0 auto;
-    margin: 8rem auto 0
+    /* margin: 8rem auto 0 */
   }
 }
 /* max */

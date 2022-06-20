@@ -82,8 +82,8 @@ export default defineComponent({
       filename.value = result.data.addFile.filename;
     })
 
-    doneAuthor(result => {
-      console.log(result.data);
+    doneAuthor(() => {
+      // console.log(result.data);
       author.displayName = '';
       author.email = '';
       author.phoneNumber = '';
@@ -111,7 +111,7 @@ export default defineComponent({
       // formData.append("file", file);
       // console.log(formData);
       try {
-        console.log(file);
+        // console.log(file);
         handleFile({
           file: file,
           // variables: data,
@@ -126,7 +126,7 @@ export default defineComponent({
     const handleSubmit = async () => {
       // if (!handleValidation()) return;
       try {
-        console.log({...author});
+        // console.log({...author});
         handleAccount({
           ...author
         });

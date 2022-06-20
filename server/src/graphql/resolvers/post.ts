@@ -4,17 +4,17 @@ import { posts } from '../../database/post';
 import { v4 as uuid } from 'uuid';
 
 export const Posts = {
-	name: "posts",
+	name: "Posts",
 	description: "This request gets all posts",
 	type: new GraphQLList(PostType),
 	resolve: async (parent: any, args: any, context: any) => {
-		// console.info(posts);
+		// console.info("Context: ", context.db.posts);
 		return posts;
 	}
 };
 
 export const Post = {
-	name: "post",
+	name: "Post",
 	description: "This request gets a single post",
 	type: PostType,
 	args: { id: { type: GraphQLID } },
@@ -39,7 +39,7 @@ export const addPost = {
     photoURL: { type: GraphQLString },
     date: { type: DateType },
     isPublished: { type: GraphQLBoolean },
-    authorId: { type: GraphQLID },
+    authorId: { type: GraphQLString },
   },
   // resolve: async (parent: any, args: { title?: string; content?: string; photoURL?: string; date?: string; authorId?: number; isPublished?: boolean; }, context: any) => {
   resolve: async (parent: any, args: any, context: any) => {
@@ -77,6 +77,7 @@ export const updatePost = {
     if (!id || !title || !content || !photoURL || !date || typeof isPublished != 'boolean' || !authorId) return;
     const post = posts.findIndex(post => post.id == id);
     if(!post) return;
+    console.log("post: ", post);
     const item = {
       id, 
       title, 
@@ -86,8 +87,9 @@ export const updatePost = {
       isPublished, 
       authorId 
     };
+    console.log("item: ", item);
 		const update_post = posts.splice(post, 1, item);
-    // console.log(update_post);
+    console.log("update_post: ", update_post);
     return update_post[0];
   }
 }

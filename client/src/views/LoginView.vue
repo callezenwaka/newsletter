@@ -2,7 +2,7 @@
   <div class="register">
     <Header></Header>
     <div class="">
-      <h1>Login Account</h1>
+      <h1>Account Login</h1>
       <form class="form--container" @submit.prevent="handleSubmit">
         <div class="form--item">
           <label class="form--label" for="user">User ID: </label>
@@ -12,6 +12,7 @@
           <button class="form--button" :class="{isValid: isValid}" type="submit">Submit</button>
         </div>
       </form>
+      <div>{{ author }}</div>
     </div>
   </div>
 </template>
@@ -23,6 +24,9 @@ import { computed, defineComponent, ref } from "vue";
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { handleBlur } from '@/services';
+import { useQuery } from '@vue/apollo-composable';
+import { AUTHOR } from "../graphql/Author";
+import { Author } from "@/types";
 export default defineComponent({
   name: "LoginView",
   components: {
@@ -32,18 +36,22 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     const id = ref('');
-    const author = computed(() => store.getters.author);
+    let author = computed((): Author => store.getters.author);
     const isValid = computed(() => id.value !== '' );
 
     const handleSubmit = async () => {
-      // TODO: 
       try {
-        const result = await store.dispatch('AUTHOR', id.value);
-        // console.info(result);
-        if(typeof result !== 'object') return;
+        // TODO:
+        const { result } = useQuery(AUTHOR, { id: id.value });
+        author = computed(() => result.value?.Author ?? {})
+        store.commit('SET_AUTHOR', author);
+
+        // const res = await store.dispatch('AUTHOR', id.value);
+        // if(loading) return;
+        if(typeof author.value !== 'object') return;
         localStorage.setItem('isAuthor', "true");
         localStorage.setItem('id', id.value);
-        router.push({ path: '/' })
+        router.push({ path: '/' });
       } catch (error) {
         console.log(error);
       }
@@ -66,7 +74,7 @@ export default defineComponent({
   transition: all 500ms linear;
 }
 .form--container {
-  width: 100%;
+  /* width: 100%; */
   margin: 50px auto;
   margin: 0rem auto 0;
   padding: 0 1rem;
@@ -146,7 +154,7 @@ export default defineComponent({
   .form--container {
     width: 410px;
     margin: 0 auto;
-    margin: 8rem auto 0
+    /* margin: 8rem auto 0 */
   }
 }
 /* max */

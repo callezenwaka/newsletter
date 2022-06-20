@@ -6,10 +6,24 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'Home',
     component: HomeView,
-    // meta: { requiresAuth: true },
+    meta: { requiresAuth: true },
     beforeEnter: (to, from, next) => {
       const isAuthor = JSON.parse(localStorage.getItem('isAuthor') as string) === true;
-      console.info(isAuthor);
+      // console.info(isAuthor);
+      // console.info(JSON.parse(isAuthor) !== true);
+      // if (to.name !== 'Login' && isAuthor) next({ name: 'Login' });
+      if (!isAuthor) next({ name: 'Login' });
+      else next();
+    }
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
+    meta: { requiresAuth: true },
+    beforeEnter: (to, from, next) => {
+      const isAuthor = JSON.parse(localStorage.getItem('isAuthor') as string) === true;
+      // console.info(isAuthor);
       // console.info(JSON.parse(isAuthor) !== true);
       // if (to.name !== 'Login' && isAuthor) next({ name: 'Login' });
       if (!isAuthor) next({ name: 'Login' });
@@ -54,7 +68,16 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/post',
     name: 'Post',
-    component: () => import(/* webpackChunkName: "post" */ '../views/PostView.vue')
+    component: () => import(/* webpackChunkName: "post" */ '../views/PostForm.vue'),
+    meta: { requiresAuth: true },
+    beforeEnter: (to, from, next) => {
+      const isAuthor = JSON.parse(localStorage.getItem('isAuthor') as string) === true;
+      // console.info(isAuthor);
+      // console.info(JSON.parse(isAuthor) !== true);
+      // if (to.name !== 'Login' && isAuthor) next({ name: 'Login' });
+      if (!isAuthor) next({ name: 'Login' });
+      else next();
+    }
   },
 ]
 

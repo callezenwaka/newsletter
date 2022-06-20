@@ -4,6 +4,7 @@ import cors from 'cors';
 import * as graphqlHTTP from 'express-graphql';
 import { graphqlUploadExpress, } from 'graphql-upload';
 import { schema } from "./graphql/schema";
+import { db } from "./database";
 
 const app: Application = express();
 
@@ -26,7 +27,8 @@ app.use(
   graphqlHTTP.graphqlHTTP({
     schema,
     graphiql: true,
-  })
+    context: { db },
+  }),
 );
 
 // Set up port and start the server

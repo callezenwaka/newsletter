@@ -28,9 +28,9 @@ export const AUTHORS = gql`
   }
 `;
 
-export const AUTHOR = (id: string) => gql`
-  # query Author($id: ID!) {
-    Author(id: ${id}) {
+export const AUTHOR = () => gql`
+  query Author($id: ID!) {
+    Author(id: $id) {
       id
       displayName
       email
@@ -39,5 +39,5 @@ export const AUTHOR = (id: string) => gql`
       role
       isActive
     }
-  # }
+  }
 `;

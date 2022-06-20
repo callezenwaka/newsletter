@@ -1,6 +1,8 @@
 <template>
   <nav>
     <router-link to="/">Home</router-link> 
+    <router-link v-if="isAuthor" to="/about">About</router-link> 
+    <router-link v-if="isAuthor" to="/post">Post</router-link> 
     <router-link v-if="!isAuthor" to="/register">Register</router-link> 
     <router-link v-if="!isAuthor" to="/login">Login</router-link> 
     <router-link v-if="isAuthor" class="" to="/login" @click="handleLogout">Logout</router-link>
@@ -27,13 +29,13 @@ export default defineComponent({
 </script>
 
 <style>
-#app {
+/* #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
+} */
 
 nav {
   display: flex;
@@ -41,6 +43,7 @@ nav {
   justify-content: center;
   align-items: center;
   padding: 30px;
+  box-shadow: 0 2px 4px 0 #000;
 }
 
 nav a {
