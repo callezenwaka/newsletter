@@ -1,9 +1,9 @@
 <template>
   <div class="register">
     <Header></Header>
-    <div class="">
+    <div class="form--container">
       <h1>Account Login</h1>
-      <form class="form--container" @submit.prevent="handleSubmit">
+      <form class="form" @submit.prevent="handleSubmit">
         <div class="form--item">
           <label class="form--label" for="user">User ID: </label>
           <input class="form--input" type="text" name="user" id="user" v-model="id" @blur="handleBlur($event)" placeholder="Enter id" required />
@@ -65,7 +65,6 @@ export default defineComponent({
 <style scoped>
 /* file */
 .register {
-  /* padding: 1rem; */
   height: 100%;
   min-height: 100vh;
   background-position: center;
@@ -73,8 +72,7 @@ export default defineComponent({
   background-repeat: no-repeat;
   transition: all 500ms linear;
 }
-.form--container {
-  /* width: 100%; */
+.form {
   margin: 50px auto;
   margin: 0rem auto 0;
   padding: 0 1rem;
@@ -100,7 +98,6 @@ export default defineComponent({
 .form--label {
   font-size: 14px;
   color: rgb(61, 79, 88);
-  /* color: var(--dark-theme-color); */
   position: relative;
   height: 16px;
   text-align: left;
@@ -151,10 +148,9 @@ export default defineComponent({
 }
 /* mini */
 @media only screen and (min-width: 481px) {
-  .form--container {
+  .form {
     width: 410px;
     margin: 0 auto;
-    /* margin: 8rem auto 0 */
   }
 }
 /* max */

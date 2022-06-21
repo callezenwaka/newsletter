@@ -7,6 +7,7 @@
     <router-link v-if="!isAuthor" to="/login">Login</router-link> 
     <router-link v-if="isAuthor" class="" to="/login" @click="handleLogout">Logout</router-link>
   </nav>
+   <div class="nav--route">{{ $route.name }} &sol;</div>
 </template>
 
 <script lang="ts">
@@ -15,7 +16,6 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "HeaderView",
   setup() {
-    // JSON.parse(isAuthor) !== true
     const isAuthor = JSON.parse(localStorage.getItem('isAuthor') as string) === true;
 
     const handleLogout = async () => {
@@ -29,13 +29,6 @@ export default defineComponent({
 </script>
 
 <style>
-/* #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-} */
 
 nav {
   display: flex;
@@ -55,5 +48,9 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+.nav--route {
+  text-align: left;
+  margin-top: 1rem;
 }
 </style>

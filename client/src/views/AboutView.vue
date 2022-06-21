@@ -15,7 +15,6 @@
 
 <script lang="ts">
 // @ is an alias to /src
-// import PostForm from "@/components/PostForm.vue";
 import Header from "@/components/Header.vue";
 import { defineComponent } from "vue";
 import { useRouter } from 'vue-router';
@@ -28,37 +27,24 @@ export default defineComponent({
     const router = useRouter();
 
     const handlePost = async () => {
-      // console.log('post');
       try {
-        // await store.dispatch(ActionTypes.File, {...user});
         router.push({ name: "Post" });
-        // router.push({ name: 'Post', params: { username: 'erina' } })
       } catch (error) {
         console.log(error);
       }
     };
 
     const handleAuthor = async () => {
-      // console.log('author');
       try {
-        // await store.dispatch(ActionTypes.File, {...user});
-        // router.push({ name: "Dashboard" });
+        router.push({ name: "Author" });
+        return;
       } catch (error) {
         console.log(error);
+        return;
       }
     };
 
-    const handleSubmit = async () => {
-      // console.log('About');
-      try {
-        // await store.dispatch(ActionTypes.File, {...user});
-        // router.push({ name: "Dashboard" });
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    return { handlePost, handleAuthor, handleSubmit };
+    return { handlePost, handleAuthor };
   },
 });
 </script>

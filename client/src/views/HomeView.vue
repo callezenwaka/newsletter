@@ -1,23 +1,11 @@
 <template>
   <div class="home">
     <Header></Header>
-    <!-- <div v-if="isEditing" class="home--post">
-      <button class="home--close" @click="handleEdit">&times;</button>
-      <PostForm :id="id"></PostForm>
-    </div> -->
     <div v-if="isViewing" class="home--post">
       <button class="home--edit" @click="handleEdit">&#9998;</button>
       <button class="home--close" @click="handleClose">&times;</button>
-      <PostView :id="id" @handleEdit="handleEdit" @handleClose="handleClose"></PostView>
-      <!-- <PostForm :post="post" @handleClose="handleClose"></PostForm> -->
+      <PostView :id="id" @handleClose="handleClose"></PostView>
     </div>
-    <!-- <div v-if="isViewing || isEditing" class="home--post">
-      <button class="home--edit" @click="handleEdit">&#9998;</button>
-      <button class="home--close" @click="handleClose">&times;</button>
-      <PostView :id="id" @handleEdit="handleEdit" @handleClose="handleClose"></PostView>
-      <PostView v-if="isViewing" :id="id" @handleClose="handleClose"></PostView>
-      <PostForm v-if="isEditing" @handleClose="handleClose"></PostForm>
-    </div> -->
     <div class="home--container" v-if="loading">
       <div>
         <div style="width: 700px; height: 43px; background-color: #d7d7d7; margin-bottom: 1rem;"></div>
@@ -35,13 +23,10 @@
       <ul class="home--lists">
         <li v-for="post of posts" :key="post.id">
           <PostCard :post="post" @click="handlePost(post.id)"></PostCard>
-          <!-- <PostCard :post="post"></PostCard> -->
-          <!-- <div>
-            <button type="button" @click="handlePost(post.id)">View Post</button>
-          </div> -->
           <div class="home--delete">
-            <button type="button" @click="handleDelete(post.id)">Delete Post</button>
+            <button type="button" class="home--remove" @click="handleDelete(post.id)">Delete Post</button>
           </div>
+          <hr>
         </li>
       </ul>
     </div>
@@ -51,7 +36,6 @@
 <script lang="ts">
 // @ is an alias to /src
 import { computed, defineComponent, onMounted, reactive, ref } from "vue";
-// import PostForm from "@/components/PostForm.vue";
 import PostView from "@/components/PostView.vue";
 import PostCard from "@/components/PostCard.vue";
 import Header from "@/components/Header.vue";
@@ -63,7 +47,6 @@ import { DELETE_POST, POSTS } from "../graphql/Post";
 export default defineComponent({
   name: "HomeView",
   components: {
-    // PostForm,
     PostView,
     PostCard,
     Header,
@@ -73,60 +56,33 @@ export default defineComponent({
     const router = useRouter();
     let id = ref('');
     let post = reactive({});
-    let isEditing = ref(false);
     let isViewing = ref(false);
     const { mutate: handleDeletePost, onDone: doneDeletePost } = useMutation(DELETE_POST)
     const { result, loading, refetch } = useQuery(POSTS);
     const posts = computed((): Post[] => result.value?.Posts ?? []);
     store.commit('SET_POSTS', posts);
-    // const author = computed((): Author => store.getters.author);
 
     onMounted(async () => { refetch; });
     doneDeletePost(result => {
       refetch;
       console.info(result.data);
     });
-    // onMounted(async () => { await store.commit('SET_POSTS', result.value?.Posts ?? []); });
-    // setTimeout(fun, 2000);
-    // onBeforeMount( () => { setTimeout(async () => { await store.dispatch('POSTS'); }, 5000); })
-
-    // const posts = computed((): Post[] => store.getters.posts || []);
-    // const author = localStorage.getItem('author');
-    // console.log("author: ", author);
-    // JSON.parse(value) === true
-    // const { result: resultPosts, loading: isPostsLoading, error: errorPosts, refetch: refetchPosts } = useQuery(POSTS);
-    // console.log(resultPosts.value);
-
-
 
     const handlePost = async (postId: string) => {
       id.value = postId;
-      console.info(postId);
       isViewing.value = true;
-      isEditing.value = false;
-      post = posts.value.filter(post => post.id === postId)[0];
-      console.info(post);
     }
 
     const handleEdit = async () => {
       // id.value = '';
-      isEditing.value = true;
       isViewing.value = false;
-      // console.info('close')
-      // router.push({ name: "Post" });
-      // params: { data: yourData}
-      // const post = posts.value.filter(post => post.id === id.value)[0];
-      // console.info("post: ", post);
-      // post: post,
-      router.push({ name: 'Post', params: { isEditing: 'true'} });
+      router.push({ name: 'Post', params: { isEditing: 'true' } });
       return;
     }
     
     const handleClose = async () => {
       id.value = '';
-      isEditing.value = false;
       isViewing.value = false;
-      // console.info('close')
       return;
     }
 
@@ -136,11 +92,7 @@ export default defineComponent({
       return;
     }
 
-    const handleView =async () => {
-      return;
-    }
-
-    return { post, posts, refetch, loading, isEditing, isViewing, id, handlePost, handleClose, handleEdit, handleDelete, handleView };
+    return { post, posts, refetch, loading, isViewing, id, handlePost, handleClose, handleEdit, handleDelete };
   },
 });
 </script>
@@ -203,9 +155,18 @@ export default defineComponent({
   justify-content: flex-end;
   align-items: center;
 }
-/* ul {
-  list-style-type: none;
-} */
+.home--remove {
+  background-color: #ff0000;
+  color: #000000;
+  cursor: pointer;
+  border-radius: 4px;
+  border-color: transparent;
+  text-decoration: none;
+  box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+}
+.home--remove:hover {
+  opacity: 0.5;
+}
 /* mini */
 @media only screen and (min-width: 481px) {
   .home--container {

@@ -34,12 +34,12 @@
 <script lang="ts">
 // @ is an alias to /src
 import Header from "@/components/Header.vue";
-import { computed, defineComponent, onBeforeUnmount, reactive, ref } from "vue";
+import { computed, defineComponent, reactive, ref } from "vue";
 import { handleBlur } from '@/services';
 import { useMutation } from '@vue/apollo-composable';
 import { useStore } from 'vuex';
 import { ADD_FILE } from "../graphql/File";
-import { ADD_POST, POST, POSTS, UPDATE_POST } from "../graphql/Post";
+import { ADD_POST, UPDATE_POST } from "../graphql/Post";
 import { Post } from "@/types";
 import { useRoute, useRouter } from "vue-router";
 // import gql from 'graphql-tag';
@@ -48,28 +48,14 @@ export default defineComponent({
   components: {
     Header
   },
-  // props: ['isEditing'],
-  setup(props, context) {
+  setup() {
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
-    // console.info(route.params.id);
-    // onBeforeUnmount(async () => { });
 
-    // const { result, loading } = useQuery(POST, { id: route.params.id, });
-
-    // const post = computed((): Post => result.value?.Post ?? {});
-
-    const post = computed((): Post => store.getters.post);
-    
     let filename = ref('');
-    // const input = reactive({
-    //   title: post.value.title || '',
-    //   content: post.value.content ||  '',
-    //   photoURL: post.value.photoURL ||  '',
-    //   date: post.value.date? new Date(post.value.date).toISOString().slice(0, 10) :  '',
-    //   isPublished: post.value.isPublished || true
-    // });
+    const post = computed((): Post => store.getters.post);
+  
     const input = reactive({
       title: route.params.isEditing? post.value.title : '',
       content: route.params.isEditing? post.value.content :  '',
@@ -87,21 +73,12 @@ export default defineComponent({
     });
 
     const { mutate: handleFile, onDone: doneFile } = useMutation(ADD_FILE)
-    const { mutate: handleCreate, onDone: doneCreate } = useMutation(ADD_POST)
-    const { mutate: handleUpdate, onDone: doneUpdate } = useMutation(UPDATE_POST)
+    const { mutate: handleCreate } = useMutation(ADD_POST)
+    const { mutate: handleUpdate } = useMutation(UPDATE_POST)
 
     doneFile(result => {
-      // console.info(result.data.addFile.photoURL);
       input.photoURL = result.data.addFile.photoURL;
       filename.value = result.data.addFile.filename;
-    });
-
-    doneCreate(result => {
-      console.info(result.data.addPost);
-    });
-
-    doneUpdate(result => {
-      console.info(result.data.updatePost);
     });
 
     const handleImage = async (event: Event) => {
@@ -119,14 +96,9 @@ export default defineComponent({
 
     const handleSubmit = async () => {
       const { title, content, date, photoURL, isPublished } = input;
-      // if (!handleValidation()) return;
-      // const isEditing = JSON.parse(route.params.isEditing as string) === true;
-      // console.info("isEditing: ", isEditing);
-      // console.info(new Date(input.date));
-      // return;
+      console.info({ title, content, date, photoURL, isPublished });
       try {
         // TODO:
-        console.log("input: ", input);
         const authorId = localStorage.getItem('id');
         if(post.value.id) {
           handleUpdate({
@@ -138,15 +110,6 @@ export default defineComponent({
             photoURL,
             isPublished
           });
-          // console.info(" data: ",{
-          //   id: post.value.id,
-          //   authorId,
-          //   title,
-          //   content,
-          //   date,
-          //   photoURL,
-          //   isPublished
-          // });
         } else {
           handleCreate({
             authorId,
@@ -157,8 +120,6 @@ export default defineComponent({
             isPublished
           });
         }
-        // const result = await store.dispatch('ADD_POST', { authorId: authorId, ...input });
-        // console.info(result);
         input.title = "";
         input.content = "";
         input.date = "";
@@ -167,6 +128,7 @@ export default defineComponent({
         router.push({ name: "Home" });
       } catch (error) {
         console.log(error);
+        return;
       }
     };
 
@@ -256,6 +218,7 @@ export default defineComponent({
 .form--button.isValid {
   cursor: pointer;
   background-color: #0d6efd;
+  background-color: #2c3e50;
 }
 .form--button.isValid:hover {
   opacity: 0.5;

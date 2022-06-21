@@ -1,12 +1,9 @@
 <template>
   <div class="register">
     <Header></Header>
-    <div class="">
-      <h1>Register Account</h1>
-      <form class="form--container" @submit.prevent="handleSubmit">
-        <!-- <div class="form--header">
-          <h2 class="form--title">Change File</h2>
-        </div> -->
+    <div class="form--container">
+      <h1 class="form--title">Register Account</h1>
+      <form class="form" @submit.prevent="handleSubmit">
         <div class="form--item">
           <label class="form--label" for="displayName">Full Name: </label>
           <input class="form--input" type="text" name="displayName" id="displayName" v-model="author.displayName" @blur="handleBlur($event)" placeholder="Enter full name" required />
@@ -39,7 +36,6 @@
 import Header from "@/components/Header.vue";
 import { computed, defineComponent, reactive, ref } from "vue";
 import { useMutation } from '@vue/apollo-composable';
-// import gql from 'graphql-tag';
 import { ADD_AUTHOR } from "../graphql/Author";
 import { ADD_FILE } from "../graphql/File";
 import { handleBlur } from '@/services';
@@ -87,30 +83,11 @@ export default defineComponent({
     const handleImage = async (event: Event) => {
       const target = event.target as HTMLInputElement;
       const file = (target.files as FileList)[0];
-      // let data: Buffer;
-      // const reader = new window.FileReader();
-      // reader.readAsArrayBuffer(file);
-      // reader.onloadend = async () => {
-      //   // data = Buffer.from(reader.result as string);
-      //   console.log("Buffer data: ", Buffer.from(reader.result as string));
-      //   const result = await client.add(Buffer.from(reader.result as string));
-      //   const imageURL = `https://ipfs.infura.io/ipfs/${result.path}`;
-      //   console.log(imageURL);
-      // }
-      // const data = {
-      //   file: (target.files as FileList)[0]
-      // }
-      // let formData = new FormData();
-      // formData.append("file", file);
-      // console.log(formData);
       try {
         console.log(file);
         handleFile({
           file: file,
-          // variables: data,
         });
-        // const data = await addAuthorImage(formData);
-        // user.photoURL = typeof data === "string"? data : '';
       } catch (error) {
         console.log(error);
       }
@@ -119,12 +96,9 @@ export default defineComponent({
     const handleSubmit = async () => {
       // if (!handleValidation()) return;
       try {
-        // console.log({...author});
         handleAccount({
           ...author
         });
-        // await store.dispatch(ActionTypes.File, {...user});
-        // router.push({ name: "Dashboard" });
       } catch (error) {
         console.log(error);
       }
@@ -146,7 +120,7 @@ export default defineComponent({
   background-repeat: no-repeat;
   transition: all 500ms linear;
 }
-.form--container {
+.form {
   width: 100%;
   margin: 50px auto;
   margin: 0rem auto 0;
@@ -155,13 +129,6 @@ export default defineComponent({
 .form--title {
   text-align: center;
   margin: 2rem 0;
-}
-.validations {
-  display: flex;
-  justify-content: center;
-  color: #ff0000;
-  padding: 0.5rem;
-  border-radius: 5px;
 }
 .form--item {
   display: flex;
@@ -173,7 +140,6 @@ export default defineComponent({
 .form--label {
   font-size: 14px;
   color: rgb(61, 79, 88);
-  /* color: var(--dark-theme-color); */
   position: relative;
   height: 16px;
   text-align: left;
@@ -224,10 +190,9 @@ export default defineComponent({
 }
 /* mini */
 @media only screen and (min-width: 481px) {
-  .form--container {
+  .form {
     width: 410px;
     margin: 0 auto;
-    /* margin: 8rem auto 0 */
   }
 }
 /* max */
