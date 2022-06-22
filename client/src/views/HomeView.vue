@@ -35,7 +35,7 @@
 
 <script lang="ts">
 // @ is an alias to /src
-import { computed, defineComponent, onMounted, reactive, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import PostView from "@/components/PostView.vue";
 import PostCard from "@/components/PostCard.vue";
 import Header from "@/components/Header.vue";
@@ -55,17 +55,15 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
     let id = ref('');
-    let post = reactive({});
     let isViewing = ref(false);
     const { mutate: handleDeletePost, onDone: doneDeletePost } = useMutation(DELETE_POST)
     const { result, loading, refetch } = useQuery(POSTS);
     const posts = computed((): Post[] => result.value?.Posts ?? []);
     store.commit('SET_POSTS', posts);
 
-    onMounted(async () => { refetch; });
-    doneDeletePost(result => {
-      refetch;
-      console.info(result.data);
+    // onMounted(async () => { if(posts.value) refetch(); });
+    doneDeletePost(() => {
+      refetch();
     });
 
     const handlePost = async (postId: string) => {
@@ -87,12 +85,11 @@ export default defineComponent({
     }
 
     const handleDelete = async (postId: string) => {
-      console.info(postId);
       handleDeletePost({ id: postId, });
       return;
     }
 
-    return { post, posts, refetch, loading, isViewing, id, handlePost, handleClose, handleEdit, handleDelete };
+    return { posts, refetch, loading, isViewing, id, handlePost, handleClose, handleEdit, handleDelete };
   },
 });
 </script>

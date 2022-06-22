@@ -7,7 +7,7 @@
     <router-link v-if="!isAuthor" to="/login">Login</router-link> 
     <router-link v-if="isAuthor" class="" to="/login" @click="handleLogout">Logout</router-link>
   </nav>
-   <div class="nav--route">{{ $route.name }} &sol;</div>
+   <div class="nav--route">{{ $route.name }} &vert;</div>
 </template>
 
 <script lang="ts">
